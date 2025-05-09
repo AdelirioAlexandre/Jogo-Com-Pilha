@@ -4,10 +4,10 @@ import java.util.*;
 public class Principal {
     // Lista com os itens
     static List<String> itens = new ArrayList<>(Arrays.asList(
-            "G", "G", "G", "G", "G", "G",
-            "R", "R", "R", "R", "R", "R",
-            "B", "B", "B", "B", "B", "B",
-            "P", "P", "P", "P", "P", "P"
+            "G", "G", "G", "G", "G",
+            "R", "R", "R", "R", "R",
+            "B", "B", "B", "B", "B",
+            "P", "P", "P", "P", "P"
     ));
 
     // Pilhas
@@ -26,11 +26,24 @@ public class Principal {
         preenchimento(pilha5);
 
         //loop de movimento
-        while(true){
+        while(true) {
             usuario();
-            int opcao = JOptionPane.showConfirmDialog(null,"Deseja fazer um movimento ?", "Movimento", JOptionPane.YES_NO_OPTION);
+            
+            // Verifica se o jogo terminou
+            if (verificarFimJogo()) {
+                JOptionPane.showMessageDialog(null, 
+                    "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!", 
+                    "Fim de Jogo", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
 
-            if(opcao != JOptionPane.YES_NO_OPTION){
+            int opcao = JOptionPane.showConfirmDialog(null,
+                "Deseja fazer um movimento ?", 
+                "Movimento", 
+                JOptionPane.YES_NO_OPTION);
+
+            if(opcao != JOptionPane.YES_OPTION) {
                 break;
             }
 
@@ -101,7 +114,6 @@ public class Principal {
         };
         return String.format("<span style='color: %s; font-weight: bold; font-size: 11px;'>%s</span>", cor, item);
     }
-
     //Metodo de Movimento
     public static void moverItem(){
         //Pilha Origem
@@ -112,13 +124,14 @@ public class Principal {
         String destino = JOptionPane.showInputDialog("Digite a pilha de destino !");
         if(destino == null) return;
 
-        try{
+        try {
             int pilhaOrigem = Integer.parseInt(origem);
             int pilhaDestino = Integer.parseInt(destino);
 
             //Verificando se a pilha é valida
-            if(pilhaOrigem < 1 || pilhaOrigem > 5 || pilhaDestino < 1 || pilhaDestino > 5){
+            if(pilhaOrigem < 1 || pilhaOrigem > 5 || pilhaDestino < 1 || pilhaDestino > 5) {
                 JOptionPane.showMessageDialog(null,"Numero invalido, digite entre 1 e 5");
+                return;
             }
 
             //Obtendo as pilhas
@@ -143,9 +156,19 @@ public class Principal {
 
             //Retorna ao menu
             usuario();
-        } catch (NumberFormatException e){
+
+            // Verifica se o jogo terminou após o movimento
+            if (verificarFimJogo()) {
+                JOptionPane.showMessageDialog(null,
+                        "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!",
+                        "Fim de Jogo",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Por favor, digite apenas números!");
         }
+
     }
 
     private static Stack<String> getPilha(int numero){
@@ -157,5 +180,33 @@ public class Principal {
             case 5 -> pilha5;
             default -> throw new IllegalArgumentException("Pilha inválida");
         };
+    }
+    
+    //Metodo de fim de jogo
+    public static boolean verificarFimJogo(){
+        //Virificação individual
+        boolean pilha1Igual = verificarPilhaUnicaCor(pilha1);
+        boolean pilha2Igual = verificarPilhaUnicaCor(pilha2);
+        boolean pilha3Igual = verificarPilhaUnicaCor(pilha3);
+        boolean pilha4Igual = verificarPilhaUnicaCor(pilha4);
+        boolean pilha5Igual = verificarPilhaUnicaCor(pilha5);
+        
+        return pilha1Igual && pilha2Igual && pilha3Igual && pilha4Igual && pilha5Igual;
+    }
+    
+    //Metodo para verificar se todas as pilhas tem a mesma cor
+    private static boolean verificarPilhaUnicaCor(Stack<String> pilha){
+        if(pilha.isEmpty()){
+            return false;
+        }
+        
+        String primeiraCor = pilha.firstElement();
+        // Verifica se todos os elementos são iguais ao primeiro
+        for (String item : pilha) {
+            if (!item.equals(primeiraCor)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
