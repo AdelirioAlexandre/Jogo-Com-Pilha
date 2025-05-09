@@ -115,7 +115,7 @@ public class Principal {
         return String.format("<span style='color: %s; font-weight: bold; font-size: 11px;'>%s</span>", cor, item);
     }
     //Metodo de Movimento
-    public static void moverItem(){
+    public static void moverItem() {
         //Pilha Origem
         String origem = JOptionPane.showInputDialog("Digite a pilha que voce deseja mover !");
         if(origem == null) return; //Caso o usuario cancele
@@ -144,32 +144,43 @@ public class Principal {
                 return;
             }
 
-            // Verifica se a pilha de destino não está cheia
-            if (stackDestino.size() >= 6) {
-                JOptionPane.showMessageDialog(null, "A pilha de destino está cheia!");
-                return;
+            // Cria uma pilha temporária para armazenar os itens a serem movidos
+            Stack<String> itensParaMover = new Stack<>();
+            String corInicial = stackOrigem.peek();
+        
+            // Conta quantos itens de mesma cor serão movidos
+            int quantidadeItens = 0;
+        
+            // Verifica quantos itens consecutivos da mesma cor existem
+            while (!stackOrigem.isEmpty() && stackOrigem.peek().equals(corInicial)) {
+                quantidadeItens++;
+                if (stackDestino.size() + quantidadeItens > 6) {
+                    JOptionPane.showMessageDialog(null, "Não há espaço suficiente na pilha de destino!");
+                    return;
+                }
+                itensParaMover.push(stackOrigem.pop());
             }
-
-            //Mover itens entre as pilhas
-            String item = stackOrigem.pop();
-            stackDestino.push(item);
+        
+            // Move os itens da pilha temporária para a pilha de destino (invertendo a ordem)
+            while (!itensParaMover.isEmpty()) {
+                stackDestino.push(itensParaMover.pop());
+            }
 
             //Retorna ao menu
             usuario();
 
             // Verifica se o jogo terminou após o movimento
             if (verificarFimJogo()) {
-                JOptionPane.showMessageDialog(null,
-                        "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!",
-                        "Fim de Jogo",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, 
+                    "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!", 
+                    "Fim de Jogo", 
+                    JOptionPane.INFORMATION_MESSAGE);
             }
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Por favor, digite apenas números!");
         }
-
-    }
+}
 
     private static Stack<String> getPilha(int numero){
         return switch (numero){
