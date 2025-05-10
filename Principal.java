@@ -9,7 +9,7 @@ public class Principal {
             "B", "B", "B", "B", "B", "B", "B",
             "P", "P", "P", "P", "P", "P", "P",
             "Y", "Y", "Y", "Y", "Y", "Y", "Y", // Nova cor: Amarelo
-            "B", "B", "B", "B", "B", "B", "B"
+            "L", "L", "L", "L", "L", "L", "L"
     ));
 
     // Pilhas
@@ -20,6 +20,12 @@ public class Principal {
     static Stack<String> pilha5 = new Stack<>();
     static Stack<String> pilha6 = new Stack<>();
     static Stack<String> pilha7 = new Stack<>();
+
+    // Variáveis para rastrear o último movimento
+    static int ultimaPilhaOrigem = -1;
+    static int ultimaPilhaDestino = -1;
+    static String ultimaCorMovida = null;
+    static boolean primeiroMovimento = true;
 
     public static void main(String[] args) {
         Collections.shuffle(itens);
@@ -182,37 +188,53 @@ public class Principal {
                 return;
             }
 
-            Stack<String> itensParaMover = new Stack<>();
-            String corInicial = stackOrigem.peek();
-        
-            int quantidadeItens = 0;
-        
-            while (!stackOrigem.isEmpty() && stackOrigem.peek().equals(corInicial)) {
-                quantidadeItens++;
-                if (stackDestino.size() + quantidadeItens > 7) {
-                    JOptionPane.showMessageDialog(null, "Não há espaço suficiente na pilha de destino!");
-                    return;
-                }
-                itensParaMover.push(stackOrigem.pop());
-            }
-        
-            while (!itensParaMover.isEmpty()) {
-                stackDestino.push(itensParaMover.pop());
-            }
-
-            usuario();
-
-            if (verificarFimJogo()) {
+            // Verifica se está tentando mover os mesmos itens do último movimento
+            if (!primeiroMovimento && pilhaDestino == ultimaPilhaDestino) {
                 JOptionPane.showMessageDialog(null, 
-                    "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!", 
-                    "Fim de Jogo", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Você não pode mover para a mesma pilha do último movimento! Escolha outro destino.");
+                return;
             }
 
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Por favor, digite apenas números!");
+            String itemParaMover = stackOrigem.peek();
+
+            // Verifica se está tentando mover os itens que acabaram de ser movidos
+            if (!primeiroMovimento && 
+                pilhaOrigem == ultimaPilhaDestino && 
+                itemParaMover.equals(ultimaCorMovida)) {
+                JOptionPane.showMessageDialog(null, 
+                    "Você não pode mover o item que acabou de mover! Faça outro movimento primeiro.");
+                return;
+            }
+        
+        // Verifica se há espaço na pilha de destino
+        if (stackDestino.size() >= 7) {
+            JOptionPane.showMessageDialog(null, "Não há espaço suficiente na pilha de destino!");
+            return;
         }
+        
+        // Move apenas um item
+        String item = stackOrigem.pop();
+        stackDestino.push(item);
+        
+        // Atualiza o último movimento realizado
+        ultimaPilhaOrigem = pilhaOrigem;
+        ultimaPilhaDestino = pilhaDestino;
+        ultimaCorMovida = item;
+        primeiroMovimento = false;
+
+        usuario();
+
+        if (verificarFimJogo()) {
+            JOptionPane.showMessageDialog(null, 
+                "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!", 
+                "Fim de Jogo", 
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "Por favor, digite apenas números!");
     }
+}
 
     private static Stack<String> getPilha(int numero) {
         return switch (numero) {
