@@ -9,7 +9,7 @@ public class Principal {
             "B", "B", "B", "B", "B", "B", "B",
             "P", "P", "P", "P", "P", "P", "P",
             "Y", "Y", "Y", "Y", "Y", "Y", "Y", // Nova cor: Amarelo
-            "L", "L", "L", "L", "L", "L", "L"
+            "B", "B", "B", "B", "B", "B", "B"
     ));
 
     // Pilhas
@@ -115,10 +115,36 @@ public class Principal {
 
     public static void preenchimento(Stack<String> pilha) {
         pilha.clear();
-        for (int i = 0; i <= 7 && !itens.isEmpty(); i++) {
-            pilha.push(itens.remove(0));
+        List<String> itensDisponiveis = new ArrayList<>(itens);
+        
+        for (int i = 0; i < 7 && !itensDisponiveis.isEmpty(); i++) {
+            String itemSelecionado = null;
+            
+            // Se não for o primeiro item da pilha, procura por uma cor diferente
+            if (!pilha.isEmpty()) {
+                String corTopo = pilha.peek();
+                // Procura um item de cor diferente
+                for (int j = 0; j < itensDisponiveis.size(); j++) {
+                    if (!itensDisponiveis.get(j).equals(corTopo)) {
+                        itemSelecionado = itensDisponiveis.remove(j);
+                        break;
+                    }
+                }
+                // Se não encontrou cor diferente, pega o primeiro disponível
+                if (itemSelecionado == null && !itensDisponiveis.isEmpty()) {
+                    itemSelecionado = itensDisponiveis.remove(0);
+                }
+            } else {
+                // Para o primeiro item, pega qualquer um
+                itemSelecionado = itensDisponiveis.remove(0);
+            }
+        
+        if (itemSelecionado != null) {
+            pilha.push(itemSelecionado);
+            itens.remove(itemSelecionado); // Remove o item da lista original
         }
     }
+}
 
     private static String colorirItem(String item) {
         String cor = switch (item) {
@@ -163,7 +189,7 @@ public class Principal {
         
             while (!stackOrigem.isEmpty() && stackOrigem.peek().equals(corInicial)) {
                 quantidadeItens++;
-                if (stackDestino.size() + quantidadeItens > 5) {
+                if (stackDestino.size() + quantidadeItens > 7) {
                     JOptionPane.showMessageDialog(null, "Não há espaço suficiente na pilha de destino!");
                     return;
                 }
