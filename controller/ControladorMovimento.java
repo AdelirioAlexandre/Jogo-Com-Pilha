@@ -4,8 +4,6 @@ import model.Movimento;
 import model.MovimentoInvalidoException;
 import model.TabuleiroPilhas;
 
-import java.util.Stack;
-
 public class ControladorMovimento {
     private int ultimaPilhaDestino = -1;
     private String ultimaCorMovida = null;

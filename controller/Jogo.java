@@ -5,8 +5,8 @@ import model.TabuleiroPilhas;
 import view.Interface;
 
 public class Jogo {
-    private TabuleiroPilhas tabuleiro;
-    private Interface interfaceJogo;
+    private final TabuleiroPilhas tabuleiro;
+    private final Interface interfaceJogo;
 
     public Jogo() {
         tabuleiro = new TabuleiroPilhas();
@@ -20,25 +20,34 @@ public class Jogo {
             Movimento movimento = interfaceJogo.pedirMovimento(tabuleiro);
             
             if (movimento == null) {
-                continue; // Volta ao início do loop se o movimento for nulo
+                continue;
             }
 
-            realizarMovimento(movimento);
+            if (!realizarMovimento(movimento)) {
+                verificarEExibirErro(movimento);
+            }
         }
 
         interfaceJogo.mostrarMensagemVitoria();
     }
 
-    private void realizarMovimento(Movimento movimento) {
-        if (!tabuleiro.mover(movimento)) { // Aqui mudamos de executarMovimento para mover
-            if (movimento.getOrigem() - 1 >= 0 
-                && movimento.getOrigem() - 1 < tabuleiro.getPilhas().size() 
-                && !tabuleiro.getPilhas().get(movimento.getOrigem() - 1).isEmpty() 
-                && tabuleiro.getPilhas().get(movimento.getOrigem() - 1).peek().equals(tabuleiro.getUltimoItemMovido())) {
-                interfaceJogo.mostrarErro("Você não pode mover o mesmo item duas vezes seguidas!");
-            } else {
-                interfaceJogo.mostrarErro("Movimento inválido!");
-            }
+    private boolean realizarMovimento(Movimento movimento) {
+        return tabuleiro.mover(movimento);
+    }
+
+    private void verificarEExibirErro(Movimento movimento) {
+        if (isMovimentoRepetido(movimento)) {
+            interfaceJogo.mostrarErro("Você não pode mover o mesmo item duas vezes seguidas!");
+        } else {
+            interfaceJogo.mostrarErro("Movimento inválido!");
         }
+    }
+
+    private boolean isMovimentoRepetido(Movimento movimento) {
+        int origem = movimento.getOrigem() - 1;
+        return origem >= 0 
+            && origem < tabuleiro.getPilhas().size() 
+            && !tabuleiro.getPilhas().get(origem).isEmpty() 
+            && tabuleiro.getPilhas().get(origem).peek().equals(tabuleiro.getUltimoItemMovido());
     }
 }
