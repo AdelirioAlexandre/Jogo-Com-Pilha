@@ -40,24 +40,20 @@ public class Interface {
     }
 
     public Movimento pedirMovimento(TabuleiroPilhas tabuleiro) {
-        // Painel principal usando BoxLayout vertical
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Painel para as pilhas
         JLabel pilhasLabel = new JLabel(criarVisualizacaoPilhas(tabuleiro));
         pilhasLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(pilhasLabel);
 
-        // Adiciona espaço entre as pilhas e os inputs
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Painel para os inputs
         JPanel inputPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         inputPanel.setMaximumSize(new Dimension(300, 80));
         inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         JLabel origemLabel = new JLabel("Pilha de origem (1-3):");
         JTextField origemField = new JTextField(5);
         JLabel destinoLabel = new JLabel("Pilha de destino (1-3):");
@@ -69,18 +65,16 @@ public class Interface {
         inputPanel.add(destinoField);
 
         mainPanel.add(inputPanel);
-
-        // Define um tamanho preferido para o diálogo
         mainPanel.setPreferredSize(new Dimension(400, 350));
 
         int result = JOptionPane.showConfirmDialog(
-            null,
-            mainPanel,
-            "Torre de Cores - Fazer Movimento",
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.PLAIN_MESSAGE
+                null,
+                mainPanel,
+                "Torre de Cores - Fazer Movimento",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
         );
-        
+
         if (result == JOptionPane.OK_OPTION) {
             try {
                 int origem = Integer.parseInt(origemField.getText().trim());
@@ -96,6 +90,7 @@ public class Interface {
             return null;
         }
     }
+
 
     private void mostrarMensagemDespedida() {
         JOptionPane.showMessageDialog(null,

@@ -15,22 +15,23 @@ public class ControladorMovimento {
         validarNumeroPilha(movimento.getOrigem());
         validarNumeroPilha(movimento.getDestino());
 
-        Stack<String> pilhaOrigem = tabuleiro.getPilha(movimento.getOrigem());
-        Stack<String> pilhaDestino = tabuleiro.getPilha(movimento.getDestino());
-
-        if (pilhaOrigem.isEmpty()) {
+        // Apenas verificar se a pilha está vazia
+        if (tabuleiro.getPilha(movimento.getOrigem()).isEmpty()) {
             throw new MovimentoInvalidoException("A pilha de origem está vazia!");
         }
 
-        if (pilhaDestino.size() > 7) {
+        // Verificar tamanho da pilha destino
+        if (tabuleiro.getPilha(movimento.getDestino()).size() > 7) {
             throw new MovimentoInvalidoException("Não há espaço suficiente na pilha de destino!");
         }
 
         if (!primeiroMovimento) {
-            validarMovimentoRepetido(movimento, pilhaOrigem);
+            String corAtual = tabuleiro.getPilha(movimento.getOrigem()).peek();
+            validarMovimentoRepetido(movimento, corAtual);
         }
 
-        atualizarUltimoMovimento(movimento, pilhaOrigem.peek());
+        String corMovimento = tabuleiro.getPilha(movimento.getOrigem()).peek();
+        atualizarUltimoMovimento(movimento, corMovimento);
         return true;
     }
 
@@ -40,13 +41,12 @@ public class ControladorMovimento {
         }
     }
 
-    private void validarMovimentoRepetido(Movimento movimento, Stack<String> pilhaOrigem) throws MovimentoInvalidoException {
+    private void validarMovimentoRepetido(Movimento movimento, String corAtual) throws MovimentoInvalidoException {
         if (movimento.getDestino() == ultimaPilhaDestino) {
             throw new MovimentoInvalidoException("Você não pode mover para a mesma pilha do último movimento!");
         }
 
-        if (movimento.getOrigem() == ultimaPilhaDestino &&
-                pilhaOrigem.peek().equals(ultimaCorMovida)) {
+        if (movimento.getOrigem() == ultimaPilhaDestino && corAtual.equals(ultimaCorMovida)) {
             throw new MovimentoInvalidoException("Você não pode mover o item que acabou de mover!");
         }
     }

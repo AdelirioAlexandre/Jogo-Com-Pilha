@@ -1,61 +1,102 @@
 package model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
 
 public class TabuleiroPilhas {
-    private final List<Stack<String>> pilhas;
-    private final List<String> cores;
+    private List<Stack<String>> pilhas;
+    private String ultimoItemMovido; // Adicionado novamente
 
     public TabuleiroPilhas() {
         pilhas = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             pilhas.add(new Stack<>());
         }
-
-        cores = Arrays.asList(
-            "G", "G", "G", "G", "G", "G", "G",
-            "R", "R", "R", "R", "R", "R", "R",
-            "B", "B", "B", "B", "B", "B", "B",
-            "P", "P", "P", "P", "P", "P", "P",
-            "Y", "Y", "Y", "Y", "Y", "Y", "Y",
-            "L", "L", "L", "L", "L", "L", "L"
-        );
     }
 
     public void distribuirPecas() {
-        List<String> pecasEmbaralhadas = new ArrayList<>(cores);
-        Collections.shuffle(pecasEmbaralhadas);
-        int pecaPorPilha = pecasEmbaralhadas.size() / 6;
-        int pecaAtual = 0;
-        for (int i = 0; i < 6; i++) {
-            Stack<String> pilha = pilhas.get(i);
-            for (int j = 0; j < pecaPorPilha; j++) {
-                pilha.push(pecasEmbaralhadas.get(pecaAtual++));
-            }
+        // Criar lista com todas as peças
+        List<String> pecas = new ArrayList<>();
+        
+        // Adicionar 5 peças de cada cor (totalizando 35 peças)
+        for (int i = 0; i < 7; i++) {
+            pecas.add("R"); // Vermelho
+            pecas.add("G"); // Verde
+            pecas.add("B"); // Azul
+            pecas.add("Y"); // Amarelo
+            pecas.add("P"); // Rosa
+            pecas.add("L"); // Preto
+        }
+
+        // Embaralhar as peças
+        Collections.shuffle(pecas);
+
+        // Distribuir as peças entre todas as pilhas
+        // Inicialmente, colocar 5 peças em cada uma das 5 primeiras pilhas
+        for (int i = 0; i < pecas.size(); i++) {
+            int pilhaDestino = i / 7; // Distribui 5 peças por pilha
+            pilhas.get(pilhaDestino).push(pecas.get(i));
         }
     }
 
-    public Stack<String> getPilha(int numero) {
-        return pilhas.get(numero - 1);
-    }
+    public boolean mover(Movimento movimento) {
+        int origem = movimento.getOrigem() - 1;
+        int destino = movimento.getDestino() - 1;
 
-    public void executarMovimento(Movimento movimento) {
-        Stack<String> origem = getPilha(movimento.getOrigem());
-        Stack<String> destino = getPilha(movimento.getDestino());
-        destino.push(origem.pop());
-    }
+        // Validação básica dos índices
+        if (origem < 0 || origem >= pilhas.size() || destino < 0 || destino >= pilhas.size()) {
+            return false;
+        }
 
-    public boolean verificarVitoria() {
-        return pilhas.stream().allMatch(this::verificarPilhaUnicaCor);
-    }
+        Stack<String> pilhaOrigem = pilhas.get(origem);
+        Stack<String> pilhaDestino = pilhas.get(destino);
 
-    private boolean verificarPilhaUnicaCor(Stack<String> pilha) {
-        if (pilha.isEmpty()) return false;
-        String cor = pilha.firstElement();
-        return pilha.stream().allMatch(item -> item.equals(cor));
+        // Verifica se a pilha de origem está vazia
+        if (pilhaOrigem.isEmpty()) {
+            return false;
+        }
+
+        // Realiza o movimento
+        String item = pilhaOrigem.pop();
+        pilhaDestino.push(item);
+        ultimoItemMovido = item; // Atualiza o último item movido
+        return true;
     }
 
     public List<Stack<String>> getPilhas() {
-        return Collections.unmodifiableList(pilhas);
+        return pilhas;
+    }
+
+    public void adicionarItem(int numeroPilha, String item) {
+        pilhas.get(numeroPilha - 1).push(item);
+    }
+
+    public boolean verificarVitoria() {
+        // Verifica apenas as pilhas que contêm peças
+        for (Stack<String> pilha : pilhas) {
+            if (!pilha.isEmpty()) {
+                String primeiraCor = pilha.get(0);
+                // Verifica se todas as peças na pilha são da mesma cor
+                for (String peca : pilha) {
+                    if (!peca.equals(primeiraCor)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // Método adicionado novamente para resolver o erro
+    public String getUltimoItemMovido() {
+        return ultimoItemMovido;
+    }
+    public Stack<String> getPilha(int numeroPilha) {
+        Stack<String> original = pilhas.get(numeroPilha - 1);
+        Stack<String> copia = new Stack<>();
+        copia.addAll(original);
+        return copia;
     }
 }
