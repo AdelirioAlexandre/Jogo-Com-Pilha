@@ -73,9 +73,9 @@ public class Interface {
         inputPanel.setMaximumSize(new Dimension(300, 80));
         inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        inputPanel.add(new JLabel("Pilha de origem (1-7):"));
+        inputPanel.add(new JLabel("Pilha Origem:"));
         inputPanel.add(new JTextField(5));
-        inputPanel.add(new JLabel("Pilha de destino (1-7):"));
+        inputPanel.add(new JLabel("Pilha Destino:"));
         inputPanel.add(new JTextField(5));
 
         return inputPanel;

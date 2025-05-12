@@ -3,7 +3,9 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 public class TabuleiroPilhas {
@@ -13,7 +15,6 @@ public class TabuleiroPilhas {
     private final List<Stack<String>> pilhas;
     private String ultimoItemMovido;
 
-    // Mudando o construtor para public
     public TabuleiroPilhas() {
         pilhas = new ArrayList<>();
         for (int i = 0; i < NUMERO_DE_PILHAS; i++) {
@@ -41,15 +42,45 @@ public class TabuleiroPilhas {
         // Embaralha as peças
         Collections.shuffle(pecas);
 
-        // Distribui as peças entre as pilhas 1 a 6 (7 peças por pilha)
-        int pecaAtual = 0;
-        for (int i = 0; i < 6; i++) {
-            Stack<String> pilha = pilhas.get(i);
-            for (int j = 0; j < MAX_ITENS_POR_PILHA; j++) {
-                if (pecaAtual < pecas.size()) {
-                    pilha.push(pecas.get(pecaAtual));
-                    pecaAtual++;
+        // Tentativa de distribuir garantindo cores diferentes no topo das pilhas 1-6
+        boolean distribuido = false;
+        while (!distribuido) {
+            // Limpar pilhas antes de tentar distribuir
+            for (int i = 0; i < 6; i++) {
+                pilhas.get(i).clear();
+            }
+
+            List<String> copiaPecas = new ArrayList<>(pecas);
+            int pecaAtual = 0;
+            for (int i = 0; i < 6; i++) {
+                Stack<String> pilha = pilhas.get(i);
+                for (int j = 0; j < MAX_ITENS_POR_PILHA; j++) {
+                    if (pecaAtual < copiaPecas.size()) {
+                        pilha.push(copiaPecas.get(pecaAtual));
+                        pecaAtual++;
+                    }
                 }
+            }
+
+            // Verificar se os topos são diferentes
+            Set<String> coresTopo = new HashSet<>();
+            boolean todosDiferentes = true;
+            for (int i = 0; i < 6; i++) {
+                Stack<String> pilha = pilhas.get(i);
+                if (!pilha.isEmpty()) {
+                    String topo = pilha.peek();
+                    if (coresTopo.contains(topo)) {
+                        todosDiferentes = false;
+                        break;
+                    }
+                    coresTopo.add(topo);
+                }
+            }
+
+            if (todosDiferentes) {
+                distribuido = true;
+            } else {
+                Collections.shuffle(pecas);
             }
         }
     }
@@ -58,8 +89,8 @@ public class TabuleiroPilhas {
         int origem = movimento.getOrigem() - 1;
         int destino = movimento.getDestino() - 1;
 
-        if (origem < 0 || origem >= NUMERO_DE_PILHAS || 
-            destino < 0 || destino >= NUMERO_DE_PILHAS) {
+        if (origem < 0 || origem >= NUMERO_DE_PILHAS ||
+                destino < 0 || destino >= NUMERO_DE_PILHAS) {
             return false;
         }
 
@@ -88,8 +119,8 @@ public class TabuleiroPilhas {
     }
 
     public boolean podeAdicionarItem(int numeroPilha) {
-        if (numeroPilha < 1 || numeroPilha > NUMERO_DE_PILHAS) {
-            return false;
+        if (numeroPilha == 7) {
+            return true; // Agora permitido adicionar na pilha 7
         }
 
         Stack<String> pilha = pilhas.get(numeroPilha - 1);
