@@ -4,25 +4,27 @@ import model.Movimento;
 import model.TabuleiroPilhas;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.List;
 import java.util.Stack;
 
 public class Interface {
-    public void mostrarTabuleiro(TabuleiroPilhas tabuleiro) {
+    private String criarVisualizacaoPilhas(TabuleiroPilhas tabuleiro) {
         StringBuilder mensagem = new StringBuilder();
-        mensagem.append("<html><body style='font-family: Arial; font-size: 11px;'>");
+        mensagem.append("<html><div style='font-family: Arial; font-size: 14px;'>");
 
         List<Stack<String>> pilhas = tabuleiro.getPilhas();
         for (int i = 0; i < pilhas.size(); i++) {
-            mensagem.append(String.format("Pilha %d: ", i + 1));
+            mensagem.append(String.format("<p style='margin: 5px 0;'><b>Pilha %d:</b> ", i + 1));
             for (String item : pilhas.get(i)) {
                 mensagem.append(colorirItem(item)).append(" ");
             }
-            mensagem.append("<br><br>");
+            mensagem.append("</p>");
         }
 
-        mensagem.append("</body></html>");
-        JOptionPane.showMessageDialog(null, mensagem.toString(), "Visualização das Pilhas", JOptionPane.INFORMATION_MESSAGE);
+        mensagem.append("</div></html>");
+        return mensagem.toString();
     }
 
     private String colorirItem(String item) {
@@ -34,28 +36,63 @@ public class Interface {
             case "Y" -> "#FFD700";
             default -> "black";
         };
-        return String.format("<span style='color: %s; font-weight: bold;'>%s</span>", cor, item);
+        return String.format("<span style='color: %s; font-weight: bold; font-size: 16px;'>%s</span>", cor, item);
     }
 
-    public Movimento pedirMovimento() {
-        String origem = JOptionPane.showInputDialog("Digite a pilha que você deseja mover:");
-        if (origem == null) return null;
+    public Movimento pedirMovimento(TabuleiroPilhas tabuleiro) {
+        // Painel principal usando BoxLayout vertical
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        String destino = JOptionPane.showInputDialog("Digite a pilha de destino:");
-        if (destino == null) return null;
+        // Painel para as pilhas
+        JLabel pilhasLabel = new JLabel(criarVisualizacaoPilhas(tabuleiro));
+        pilhasLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(pilhasLabel);
 
-        try {
-            return new Movimento(Integer.parseInt(origem), Integer.parseInt(destino));
-        } catch (NumberFormatException e) {
-            mostrarErro("Por favor, digite apenas números!");
-            return null;
+        // Adiciona espaço entre as pilhas e os inputs
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Painel para os inputs
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        inputPanel.setMaximumSize(new Dimension(300, 80));
+        inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JLabel origemLabel = new JLabel("Pilha Origem:");
+        JTextField origemField = new JTextField(5);
+        JLabel destinoLabel = new JLabel("Pilha Destino:");
+        JTextField destinoField = new JTextField(5);
+
+        inputPanel.add(origemLabel);
+        inputPanel.add(origemField);
+        inputPanel.add(destinoLabel);
+        inputPanel.add(destinoField);
+
+        mainPanel.add(inputPanel);
+
+        // Define um tamanho preferido para o diálogo
+        mainPanel.setPreferredSize(new Dimension(400, 350));
+
+        int result = JOptionPane.showConfirmDialog(
+            null,
+            mainPanel,
+            "Torre de Cores - Fazer Movimento",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+        
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int origem = Integer.parseInt(origemField.getText().trim());
+                int destino = Integer.parseInt(destinoField.getText().trim());
+                return new Movimento(origem, destino);
+            } catch (NumberFormatException e) {
+                mostrarErro("Por favor, digite apenas números!");
+                return null;
+            }
         }
-    }
-
-    public boolean perguntarSeDesejaContinuar() {
-        int opcao = JOptionPane.showConfirmDialog(null,
-                "Deseja fazer um movimento?", "Movimento", JOptionPane.YES_NO_OPTION);
-        return opcao == JOptionPane.YES_OPTION;
+        
+        return null;
     }
 
     public void mostrarMensagemVitoria() {

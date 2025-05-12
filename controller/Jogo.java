@@ -20,14 +20,8 @@ public class Jogo {
         tabuleiro.distribuirPecas();
 
         while (true) {
-            interfaceJogo.mostrarTabuleiro(tabuleiro);
-
             if (tabuleiro.verificarVitoria()) {
                 interfaceJogo.mostrarMensagemVitoria();
-                break;
-            }
-
-            if (!interfaceJogo.perguntarSeDesejaContinuar()) {
                 break;
             }
 
@@ -36,7 +30,7 @@ public class Jogo {
     }
 
     private void realizarMovimento() {
-        Movimento movimento = interfaceJogo.pedirMovimento();
+        Movimento movimento = interfaceJogo.pedirMovimento(tabuleiro);
         if (movimento == null) return;
 
         try {
