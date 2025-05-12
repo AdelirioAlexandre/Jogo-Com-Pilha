@@ -58,9 +58,9 @@ public class Interface {
         inputPanel.setMaximumSize(new Dimension(300, 80));
         inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        JLabel origemLabel = new JLabel("Pilha Origem:");
+        JLabel origemLabel = new JLabel("Pilha de origem (1-3):");
         JTextField origemField = new JTextField(5);
-        JLabel destinoLabel = new JLabel("Pilha Destino:");
+        JLabel destinoLabel = new JLabel("Pilha de destino (1-3):");
         JTextField destinoField = new JTextField(5);
 
         inputPanel.add(origemLabel);
@@ -90,18 +90,31 @@ public class Interface {
                 mostrarErro("Por favor, digite apenas números!");
                 return null;
             }
+        } else {
+            mostrarMensagemDespedida();
+            System.exit(0);
+            return null;
         }
-        
-        return null;
+    }
+
+    private void mostrarMensagemDespedida() {
+        JOptionPane.showMessageDialog(null,
+                "Até mais! Obrigado por jogar!",
+                "Despedida",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void mostrarMensagemVitoria() {
         JOptionPane.showMessageDialog(null,
                 "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!",
-                "Fim de Jogo", JOptionPane.INFORMATION_MESSAGE);
+                "Fim de Jogo",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void mostrarErro(String mensagem) {
-        JOptionPane.showMessageDialog(null, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null,
+                mensagem,
+                "Erro",
+                JOptionPane.ERROR_MESSAGE);
     }
 }
