@@ -1,3 +1,10 @@
+package controller;
+
+import model.Movimento;
+import model.MovimentoInvalidoException;
+import model.TabuleiroPilhas;
+import view.Interface;
+
 public class Jogo {
     private final TabuleiroPilhas tabuleiro;
     private final Interface interfaceJogo;
@@ -12,7 +19,7 @@ public class Jogo {
     public void iniciar() {
         tabuleiro.distribuirPecas();
 
-        while(true) {
+        while (true) {
             interfaceJogo.mostrarTabuleiro(tabuleiro);
 
             if (tabuleiro.verificarVitoria()) {
