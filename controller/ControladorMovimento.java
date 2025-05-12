@@ -13,13 +13,11 @@ public class ControladorMovimento {
         validarNumeroPilha(movimento.getOrigem());
         validarNumeroPilha(movimento.getDestino());
 
-        // Apenas verificar se a pilha está vazia
         if (tabuleiro.getPilha(movimento.getOrigem()).isEmpty()) {
             throw new MovimentoInvalidoException("A pilha de origem está vazia!");
         }
 
-        // Verificar tamanho da pilha destino
-        if (tabuleiro.getPilha(movimento.getDestino()).size() > 7) {
+        if (!tabuleiro.podeAdicionarItem(movimento.getDestino())) {
             throw new MovimentoInvalidoException("Não há espaço suficiente na pilha de destino!");
         }
 

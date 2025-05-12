@@ -1,105 +1,118 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
 public class TabuleiroPilhas {
-    private static final int NUMERO_PILHAS = 7;
-    private static final int PECAS_POR_COR = 7;
-    private static final String[] CORES = {"R", "G", "B", "Y", "P", "L"};
-    
+    private static final int MAX_ITENS_POR_PILHA = 7;
+    private static final int NUMERO_DE_PILHAS = 7;
+    private static TabuleiroPilhas instance;
     private final List<Stack<String>> pilhas;
     private String ultimoItemMovido;
 
+    // Mudando o construtor para public
     public TabuleiroPilhas() {
-        pilhas = new ArrayList<>(NUMERO_PILHAS);
-        for (int i = 0; i < NUMERO_PILHAS; i++) {
+        pilhas = new ArrayList<>();
+        for (int i = 0; i < NUMERO_DE_PILHAS; i++) {
             pilhas.add(new Stack<>());
         }
+        ultimoItemMovido = "";
+    }
+
+    public static TabuleiroPilhas getInstance() {
+        if (instance == null) {
+            instance = new TabuleiroPilhas();
+        }
+        return instance;
     }
 
     public void distribuirPecas() {
-        List<String> pecas = new ArrayList<>(NUMERO_PILHAS * CORES.length);
-        
-        // Adicionar peças de cada cor
-        for (String cor : CORES) {
-            for (int i = 0; i < PECAS_POR_COR; i++) {
-                pecas.add(cor);
-            }
+        // Lista com todas as peças do jogo
+        List<String> pecas = new ArrayList<>();
+
+        // Adiciona 7 peças de cada cor
+        for (int i = 0; i < 7; i++) {
+            pecas.addAll(Arrays.asList("R", "G", "B", "Y", "P", "L"));
         }
 
+        // Embaralha as peças
         Collections.shuffle(pecas);
 
-        // Distribuir as peças
-        for (int i = 0; i < pecas.size(); i++) {
-            pilhas.get(i % NUMERO_PILHAS).push(pecas.get(i));
+        // Distribui as peças entre as pilhas 1 a 6 (7 peças por pilha)
+        int pecaAtual = 0;
+        for (int i = 0; i < 6; i++) {
+            Stack<String> pilha = pilhas.get(i);
+            for (int j = 0; j < MAX_ITENS_POR_PILHA; j++) {
+                if (pecaAtual < pecas.size()) {
+                    pilha.push(pecas.get(pecaAtual));
+                    pecaAtual++;
+                }
+            }
         }
     }
 
     public boolean mover(Movimento movimento) {
-        if (movimento == null) {
-            return false;
-        }
-
         int origem = movimento.getOrigem() - 1;
         int destino = movimento.getDestino() - 1;
 
-        if (!isIndiceValido(origem) || !isIndiceValido(destino)) {
+        if (origem < 0 || origem >= NUMERO_DE_PILHAS || 
+            destino < 0 || destino >= NUMERO_DE_PILHAS) {
+            return false;
+        }
+
+        if (!podeAdicionarItem(movimento.getDestino())) {
             return false;
         }
 
         Stack<String> pilhaOrigem = pilhas.get(origem);
+        Stack<String> pilhaDestino = pilhas.get(destino);
+
         if (pilhaOrigem.isEmpty()) {
             return false;
         }
 
-        Stack<String> pilhaDestino = pilhas.get(destino);
-        String item = pilhaOrigem.pop();
-        pilhaDestino.push(item);
-        ultimoItemMovido = item;
+        ultimoItemMovido = pilhaOrigem.peek();
+        pilhaDestino.push(pilhaOrigem.pop());
         return true;
-    }
-
-    private boolean isIndiceValido(int indice) {
-        return indice >= 0 && indice < NUMERO_PILHAS;
-    }
-
-    public List<Stack<String>> getPilhas() {
-        List<Stack<String>> copiasPilhas = new ArrayList<>(NUMERO_PILHAS);
-        for (Stack<String> pilha : pilhas) {
-            Stack<String> copia = new Stack<>();
-            copia.addAll(pilha);
-            copiasPilhas.add(copia);
-        }
-        return copiasPilhas;
-    }
-
-    public void adicionarItem(int numeroPilha, String item) {
-        if (isIndiceValido(numeroPilha - 1) && item != null) {
-            pilhas.get(numeroPilha - 1).push(item);
-        }
-    }
-
-    public boolean verificarVitoria() {
-        return pilhas.stream()
-                .filter(pilha -> !pilha.isEmpty())
-                .allMatch(pilha -> pilha.stream()
-                        .distinct()
-                        .count() == 1);
     }
 
     public String getUltimoItemMovido() {
         return ultimoItemMovido;
     }
 
-    public Stack<String> getPilha(int numeroPilha) {
-        if (!isIndiceValido(numeroPilha - 1)) {
-            return new Stack<>();
+    public List<Stack<String>> getPilhas() {
+        return pilhas;
+    }
+
+    public boolean podeAdicionarItem(int numeroPilha) {
+        if (numeroPilha < 1 || numeroPilha > NUMERO_DE_PILHAS) {
+            return false;
         }
-        Stack<String> copia = new Stack<>();
-        copia.addAll(pilhas.get(numeroPilha - 1));
-        return copia;
+
+        Stack<String> pilha = pilhas.get(numeroPilha - 1);
+        return pilha.size() < MAX_ITENS_POR_PILHA;
+    }
+
+    public boolean verificarVitoria() {
+        // Verifica se as pilhas 1-6 estão organizadas por cor
+        for (int i = 0; i < 6; i++) {
+            Stack<String> pilha = pilhas.get(i);
+            if (pilha.isEmpty()) {
+                continue;
+            }
+
+            String cor = pilha.peek();
+            for (String item : pilha) {
+                if (!item.equals(cor)) {
+                    return false;
+                }
+            }
+        }
+
+        // Verifica se a pilha 7 está vazia
+        return pilhas.get(6).isEmpty();
     }
 }

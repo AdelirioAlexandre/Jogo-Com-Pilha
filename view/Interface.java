@@ -19,7 +19,7 @@ public class Interface {
 
     private String criarVisualizacaoPilhas(TabuleiroPilhas tabuleiro) {
         StringBuilder mensagem = new StringBuilder();
-        mensagem.append(String.format("<html><div style='font-family: %s; font-size: %dpx;'>", 
+        mensagem.append(String.format("<html><div style='font-family: %s; font-size: %dpx;'>",
             FONTE_PADRAO, TAMANHO_FONTE));
 
         List<Stack<String>> pilhas = tabuleiro.getPilhas();
@@ -42,7 +42,7 @@ public class Interface {
             case "Y" -> "#FFD700";
             default -> "black";
         };
-        return String.format("<span style='color: %s; font-weight: bold; font-size: %dpx;'>%s</span>", 
+        return String.format("<span style='color: %s; font-weight: bold; font-size: %dpx;'>%s</span>",
             cor, TAMANHO_FONTE_ITEM, item);
     }
 
@@ -57,7 +57,7 @@ public class Interface {
         mainPanel.add(inputPanel);
 
         int result = mostrarDialogo(mainPanel);
-        return processarResultado(result, inputPanel);
+        return processarResultado(result, inputPanel, tabuleiro);
     }
 
     private JPanel criarPainelPrincipal() {
@@ -73,9 +73,9 @@ public class Interface {
         inputPanel.setMaximumSize(new Dimension(300, 80));
         inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        inputPanel.add(new JLabel("Pilha de origem (1-3):"));
+        inputPanel.add(new JLabel("Pilha de origem (1-7):"));
         inputPanel.add(new JTextField(5));
-        inputPanel.add(new JLabel("Pilha de destino (1-3):"));
+        inputPanel.add(new JLabel("Pilha de destino (1-7):"));
         inputPanel.add(new JTextField(5));
 
         return inputPanel;
@@ -91,13 +91,24 @@ public class Interface {
         );
     }
 
-    private Movimento processarResultado(int result, JPanel inputPanel) {
+    private Movimento processarResultado(int result, JPanel inputPanel, TabuleiroPilhas tabuleiro) {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 JTextField origemField = (JTextField) inputPanel.getComponent(1);
                 JTextField destinoField = (JTextField) inputPanel.getComponent(3);
                 int origem = Integer.parseInt(origemField.getText().trim());
                 int destino = Integer.parseInt(destinoField.getText().trim());
+
+                if (origem < 1 || origem > 7 || destino < 1 || destino > 7) {
+                    mostrarErro("As pilhas devem estar entre 1 e 7!");
+                    return null;
+                }
+
+                if (!tabuleiro.podeAdicionarItem(destino)) {
+                    mostrarErro("A pilha de destino já atingiu o limite máximo de 7 itens!");
+                    return null;
+                }
+
                 return new Movimento(origem, destino);
             } catch (NumberFormatException e) {
                 mostrarErro("Por favor, digite apenas números!");
