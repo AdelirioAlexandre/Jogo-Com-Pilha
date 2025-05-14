@@ -1,5 +1,6 @@
 package model;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -107,6 +108,12 @@ public class TabuleiroPilhas {
 
         ultimoItemMovido = pilhaOrigem.peek();
         pilhaDestino.push(pilhaOrigem.pop());
+        
+        // Verifica se o jogo terminou após o movimento
+        if (verificarVitoria()) {
+            JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
+        }
+        
         return true;
     }
 
