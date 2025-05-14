@@ -21,13 +21,13 @@ public class ControladorMovimento {
             throw new MovimentoInvalidoException("Não há espaço suficiente na pilha de destino!");
         }
 
+        String corAtual = tabuleiro.getPilha(movimento.getOrigem()).peek();
+
         if (!primeiroMovimento) {
-            String corAtual = tabuleiro.getPilha(movimento.getOrigem()).peek();
             validarMovimentoRepetido(movimento, corAtual);
         }
 
-        String corMovimento = tabuleiro.getPilha(movimento.getOrigem()).peek();
-        atualizarUltimoMovimento(movimento, corMovimento);
+        atualizarUltimoMovimento(movimento, corAtual);
         return true;
     }
 
