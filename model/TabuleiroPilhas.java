@@ -1,6 +1,5 @@
 package model;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -109,11 +108,6 @@ public class TabuleiroPilhas {
         ultimoItemMovido = pilhaOrigem.peek();
         pilhaDestino.push(pilhaOrigem.pop());
         
-        // Verifica se o jogo terminou após o movimento
-        if (verificarVitoria()) {
-            JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo!");
-        }
-        
         return true;
     }
 
@@ -126,10 +120,6 @@ public class TabuleiroPilhas {
     }
 
     public boolean podeAdicionarItem(int numeroPilha) {
-        if (numeroPilha == 7) {
-            return true; // Agora permitido adicionar na pilha 7
-        }
-
         Stack<String> pilha = pilhas.get(numeroPilha - 1);
         return pilha.size() < MAX_ITENS_POR_PILHA;
     }
