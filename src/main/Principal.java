@@ -1,6 +1,6 @@
-package main;
+package src.main;
 
-import controller.Jogo;
+import src.controller.Jogo;
 
 public class Principal {
     public static void main(String[] args) {

@@ -1,8 +1,8 @@
-package controller;
+package src.controller;
 
-import model.Movimento;
-import model.MovimentoInvalidoException;
-import model.TabuleiroPilhas;
+import src.model.Movimento;
+import src.model.MovimentoInvalidoException;
+import src.model.TabuleiroPilhas;
 
 public class ControladorMovimento {
     private int ultimaPilhaDestino = -1;

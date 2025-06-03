@@ -1,8 +1,8 @@
-package controller;
+package src.controller;
 
-import model.Movimento;
-import model.TabuleiroPilhas;
-import view.Interface;
+import src.model.Movimento;
+import src.model.TabuleiroPilhas;
+import src.view.Interface;
 
 public class Jogo {
     private final TabuleiroPilhas tabuleiro;

@@ -1,10 +1,11 @@
-package view;
-
-import model.Movimento;
-import model.TabuleiroPilhas;
+package src.view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import src.model.Movimento;
+import src.model.TabuleiroPilhas;
+
 import java.awt.*;
 import java.util.List;
 import java.util.Stack;
