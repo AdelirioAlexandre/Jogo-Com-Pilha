@@ -1,12 +1,6 @@
 package src.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class TabuleiroPilhas {
     private static final int MAX_ITENS_POR_PILHA = 7;
@@ -30,22 +24,20 @@ public class TabuleiroPilhas {
         return instance;
     }
 
-    public void distribuirPecas() {
-        // Lista com todas as peças do jogo
-        List<String> pecas = new ArrayList<>();
+    // ✅ Método adicionado para corrigir erro
+    public Stack<String> getPilha(int indice) {
+        return pilhas.get(indice - 1); // Convertendo para índice baseado em 0
+    }
 
-        // Adiciona 7 peças de cada cor
+    public void distribuirPecas() {
+        List<String> pecas = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             pecas.addAll(Arrays.asList("R", "G", "B", "Y", "P", "L"));
         }
-
-        // Embaralha as peças
         Collections.shuffle(pecas);
 
-        // Tentativa de distribuir garantindo cores diferentes no topo das pilhas 1-6
         boolean distribuido = false;
         while (!distribuido) {
-            // Limpar pilhas antes de tentar distribuir
             for (int i = 0; i < 6; i++) {
                 pilhas.get(i).clear();
             }
@@ -62,7 +54,6 @@ public class TabuleiroPilhas {
                 }
             }
 
-            // Verificar se os topos são diferentes
             Set<String> coresTopo = new HashSet<>();
             boolean todosDiferentes = true;
             for (int i = 0; i < 6; i++) {
@@ -90,11 +81,11 @@ public class TabuleiroPilhas {
         int destino = movimento.getDestino() - 1;
 
         if (origem < 0 || origem >= NUMERO_DE_PILHAS ||
-                destino < 0 || destino >= NUMERO_DE_PILHAS) {
+            destino < 0 || destino >= NUMERO_DE_PILHAS) {
             return false;
         }
 
-        if (!podeAdicionarItem(movimento.getDestino())) {
+        if (!podeAdicionarItem(destino + 1)) {
             return false;
         }
 
@@ -107,7 +98,7 @@ public class TabuleiroPilhas {
 
         ultimoItemMovido = pilhaOrigem.peek();
         pilhaDestino.push(pilhaOrigem.pop());
-        
+
         return true;
     }
 
@@ -125,7 +116,6 @@ public class TabuleiroPilhas {
     }
 
     public boolean verificarVitoria() {
-        // Verifica se as pilhas 1-6 estão organizadas por cor
         for (int i = 0; i < 6; i++) {
             Stack<String> pilha = pilhas.get(i);
             if (pilha.isEmpty()) {
@@ -139,8 +129,6 @@ public class TabuleiroPilhas {
                 }
             }
         }
-
-        // Verifica se a pilha 7 está vazia
         return pilhas.get(6).isEmpty();
     }
 }

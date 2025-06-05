@@ -38,9 +38,7 @@ public class ControladorMovimento {
     }
 
     private void validarMovimentoRepetido(Movimento movimento, String corAtual) throws MovimentoInvalidoException {
-        if (movimento.getDestino() == ultimaPilhaDestino) {
-            throw new MovimentoInvalidoException("Você não pode mover para a mesma pilha do último movimento!");
-        }
+        // Removida a verificação que proibia mover para a mesma pilha de destino do último movimento
 
         if (movimento.getOrigem() == ultimaPilhaDestino && corAtual.equals(ultimaCorMovida)) {
             throw new MovimentoInvalidoException("Você não pode mover o item que acabou de mover!");
