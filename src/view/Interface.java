@@ -2,53 +2,54 @@ package src.view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.List;
+import java.util.Stack;
+import javax.swing.Timer;
 
 import src.model.Movimento;
 import src.model.TabuleiroPilhas;
 
-import java.awt.*;
-import java.util.List;
-import java.util.Stack;
-
 public class Interface {
-    private static final int LARGURA_JANELA = 400;
-    private static final int ALTURA_JANELA = 350;
+    private static final int LARGURA_JANELA = 300;
+    private static final int ALTURA_JANELA = 400;
     private static final int ESPACAMENTO = 20;
     private static final String FONTE_PADRAO = "Arial";
     private static final int TAMANHO_FONTE = 14;
     private static final int TAMANHO_FONTE_ITEM = 16;
 
-    private String criarVisualizacaoPilhas(TabuleiroPilhas tabuleiro) {
-        StringBuilder mensagem = new StringBuilder();
-        mensagem.append(String.format("<html><div style='font-family: %s; font-size: %dpx;'>",
-            FONTE_PADRAO, TAMANHO_FONTE));
+    private JLabel cronometroLabel;
+    private long tempoInicial;
+    private Timer timer;
 
-        List<Stack<String>> pilhas = tabuleiro.getPilhas();
-        for (int i = 0; i < pilhas.size(); i++) {
-            mensagem.append(String.format("<p style='margin: 5px 0;'><b>Pilha %d:</b> ", i + 1));
-            pilhas.get(i).forEach(item -> mensagem.append(colorirItem(item)).append(" "));
-            mensagem.append("</p>");
-        }
-
-        mensagem.append("</div></html>");
-        return mensagem.toString();
+    public Interface() {
+        inicializarCronometro();
     }
 
-    private String colorirItem(String item) {
-        String cor = switch (item) {
-            case "G" -> "green";
-            case "R" -> "red";
-            case "B" -> "blue";
-            case "P" -> "#FF69B4";
-            case "Y" -> "#FFD700";
-            default -> "black";
-        };
-        return String.format("<span style='color: %s; font-weight: bold; font-size: %dpx;'>%s</span>",
-            cor, TAMANHO_FONTE_ITEM, item);
+    private void inicializarCronometro() {
+        tempoInicial = System.currentTimeMillis();
+        cronometroLabel = new JLabel("Tempo: 00:00");
+        cronometroLabel.setFont(new Font(FONTE_PADRAO, Font.BOLD, 16));
+        cronometroLabel.setForeground(Color.BLUE);
+
+        timer = new Timer(1000, e -> atualizarCronometro());
+        timer.start();
+    }
+
+    private void atualizarCronometro() {
+        long tempoAtual = System.currentTimeMillis();
+        long segundos = (tempoAtual - tempoInicial) / 1000;
+        long minutos = segundos / 60;
+        segundos %= 60;
+        cronometroLabel.setText(String.format("Tempo: %02d:%02d", minutos, segundos));
     }
 
     public Movimento pedirMovimento(TabuleiroPilhas tabuleiro) {
         JPanel mainPanel = criarPainelPrincipal();
+
+        mainPanel.add(cronometroLabel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, ESPACAMENTO)));
+
         JLabel pilhasLabel = new JLabel(criarVisualizacaoPilhas(tabuleiro));
         pilhasLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(pilhasLabel);
@@ -86,7 +87,7 @@ public class Interface {
         return JOptionPane.showConfirmDialog(
                 null,
                 mainPanel,
-                "Torre de Cores - Fazer Movimento",
+                "Jogo",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE
         );
@@ -112,7 +113,7 @@ public class Interface {
 
                 return new Movimento(origem, destino);
             } catch (NumberFormatException e) {
-                mostrarErro("Por favor, digite apenas números!");
+                mostrarErro("Movimento invalido!");
                 return null;
             }
         } else {
@@ -122,14 +123,37 @@ public class Interface {
         }
     }
 
-    private void mostrarMensagemDespedida() {
-        JOptionPane.showMessageDialog(null,
-                "Até mais! Obrigado por jogar!",
-                "Despedida",
-                JOptionPane.INFORMATION_MESSAGE);
+    private String criarVisualizacaoPilhas(TabuleiroPilhas tabuleiro) {
+        StringBuilder mensagem = new StringBuilder();
+        mensagem.append(String.format("<html><div style='font-family: %s; font-size: %dpx;'>",
+            FONTE_PADRAO, TAMANHO_FONTE));
+
+        List<Stack<String>> pilhas = tabuleiro.getPilhas();
+        for (int i = 0; i < pilhas.size(); i++) {
+            mensagem.append(String.format("<p style='margin: 5px 0;'><b>Pilha %d:</b> ", i + 1));
+            pilhas.get(i).forEach(item -> mensagem.append(colorirItem(item)).append(" "));
+            mensagem.append("</p>");
+        }
+
+        mensagem.append("</div></html>");
+        return mensagem.toString();
+    }
+
+    private String colorirItem(String item) {
+        String cor = switch (item) {
+            case "G" -> "green";
+            case "R" -> "red";
+            case "B" -> "blue";
+            case "P" -> "#FF69B4";
+            case "Y" -> "#FFD700";
+            default -> "black";
+        };
+        return String.format("<span style='color: %s; font-weight: bold; font-size: %dpx;'>%s</span>",
+            cor, TAMANHO_FONTE_ITEM, item);
     }
 
     public void mostrarMensagemVitoria() {
+        timer.stop(); // ⏹️ Para o cronômetro ao vencer
         JOptionPane.showMessageDialog(null,
                 "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!",
                 "Fim de Jogo",
@@ -141,5 +165,13 @@ public class Interface {
                 mensagem,
                 "Erro",
                 JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void mostrarMensagemDespedida() {
+        timer.stop(); // ⏹️ Para o cronômetro ao sair
+        JOptionPane.showMessageDialog(null,
+                "Até mais! Obrigado por jogar!",
+                "Despedida",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }
