@@ -6,3 +6,5 @@ public class Principal {
         jogo.iniciar();
     }
 }
+
+//Faz o L
