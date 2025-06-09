@@ -1,5 +1,4 @@
 package src.controller;
-
 import src.model.Movimento;
 import src.model.MovimentoInvalidoException;
 import src.model.TabuleiroPilhas;
@@ -17,6 +16,7 @@ public class Jogo {
         this.tabuleiro.distribuirPecas();
     }
 
+    // Loop principal do jogo, continua até que o jogador vença
     public void iniciar() {
         while (!tabuleiro.verificarVitoria()) {
             Movimento movimento = interfaceJogo.pedirMovimento(tabuleiro);
@@ -24,9 +24,8 @@ public class Jogo {
             if (movimento == null) {
                 continue;
             }
-
             try {
-                // Validação do movimento com base nas regras do ControladorMovimento
+                // Valida e realiza o movimento
                 if (controladorMovimento.validarMovimento(movimento, tabuleiro)) {
                     if (!tabuleiro.mover(movimento)) {
                         interfaceJogo.mostrarErro("Movimento inválido!");

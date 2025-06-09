@@ -1,12 +1,10 @@
 package src.view;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 import java.util.Stack;
 import javax.swing.Timer;
-
 import src.model.Movimento;
 import src.model.TabuleiroPilhas;
 
@@ -26,6 +24,7 @@ public class Interface {
         inicializarCronometro();
     }
 
+    // Conometro
     private void inicializarCronometro() {
         tempoInicial = System.currentTimeMillis();
         cronometroLabel = new JLabel("Tempo: 00:00");
@@ -44,6 +43,7 @@ public class Interface {
         cronometroLabel.setText(String.format("Tempo: %02d:%02d", minutos, segundos));
     }
 
+    // Método para solicitar o movimento do jogador
     public Movimento pedirMovimento(TabuleiroPilhas tabuleiro) {
         JPanel mainPanel = criarPainelPrincipal();
 
@@ -62,6 +62,7 @@ public class Interface {
         return processarResultado(result, inputPanel, tabuleiro);
     }
 
+    // Métodos auxiliares para criar a interface gráfica
     private JPanel criarPainelPrincipal() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -70,6 +71,7 @@ public class Interface {
         return mainPanel;
     }
 
+    // Cria o painel de entrada para o movimento do jogador
     private JPanel criarPainelInput() {
         JPanel inputPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         inputPanel.setMaximumSize(new Dimension(300, 80));
@@ -83,6 +85,7 @@ public class Interface {
         return inputPanel;
     }
 
+    // Exibe o diálogo para o jogador inserir o movimento
     private int mostrarDialogo(JPanel mainPanel) {
         return JOptionPane.showConfirmDialog(
                 null,
@@ -93,6 +96,7 @@ public class Interface {
         );
     }
 
+    // Processa o resultado do diálogo, validando e retornando o movimento
     private Movimento processarResultado(int result, JPanel inputPanel, TabuleiroPilhas tabuleiro) {
         if (result == JOptionPane.OK_OPTION) {
             try {
@@ -123,6 +127,7 @@ public class Interface {
         }
     }
 
+    // Cria a visualização das pilhas no formato HTML
     private String criarVisualizacaoPilhas(TabuleiroPilhas tabuleiro) {
         StringBuilder mensagem = new StringBuilder();
         mensagem.append(String.format("<html><div style='font-family: %s; font-size: %dpx;'>",
@@ -139,6 +144,7 @@ public class Interface {
         return mensagem.toString();
     }
 
+    // Método para colorir os itens de acordo com suas cores
     private String colorirItem(String item) {
         String cor = switch (item) {
             case "G" -> "green";
@@ -152,8 +158,9 @@ public class Interface {
             cor, TAMANHO_FONTE_ITEM, item);
     }
 
+    // Exibe uma mensagem de vitória quando o jogador vence
     public void mostrarMensagemVitoria() {
-        timer.stop(); // ⏹️ Para o cronômetro ao vencer
+        timer.stop();
         JOptionPane.showMessageDialog(null,
                 "Parabéns! Você venceu!\nTodas as pilhas estão organizadas por cor!",
                 "Fim de Jogo",
@@ -167,8 +174,9 @@ public class Interface {
                 JOptionPane.ERROR_MESSAGE);
     }
 
+    // Exibe uma mensagem de despedida quando o jogador decide sair
     private void mostrarMensagemDespedida() {
-        timer.stop(); // ⏹️ Para o cronômetro ao sair
+        timer.stop();
         JOptionPane.showMessageDialog(null,
                 "Até mais! Obrigado por jogar!",
                 "Despedida",
